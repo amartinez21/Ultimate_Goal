@@ -137,6 +137,16 @@ public class Autonomous extends LinearOpMode {
                       int i = 0;
                       for (Recognition recognition : updatedRecognitions) {
                         telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
+                            // go to target zone C
+                        } else {
+                            if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
+                                // go to target zone b
+                            } else {
+                                // do something else
+                            }
+                        }
+
                         telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                                 recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
