@@ -37,7 +37,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -57,9 +61,9 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-//@Disabled
-public class Autonomous extends LinearOpMode {
+@Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+@Disabled
+public class Autonomous_test extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     public static final String LABEL_SECOND_ELEMENT = "Single";
@@ -91,8 +95,20 @@ public class Autonomous extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    private DcMotor Left_Drive = null;
+    private DcMotor Right_Drive = null;
+
+
+
+
     @Override
     public void runOpMode() {
+
+        Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
+        Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
+
+
+
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
@@ -125,6 +141,13 @@ public class Autonomous extends LinearOpMode {
 
 
             while (opModeIsActive()) {
+                /*public void encoderDrive(double Inches, double Speed, int SleepTimeA,){
+
+                    double Diameter = 11.21;
+                    double EncoderTurns = 288;
+                    double DesiredPos = Inches * EncoderTurns / Diameter;
+                }*/
+
 
 
                 if (tfod != null) {
@@ -139,18 +162,25 @@ public class Autonomous extends LinearOpMode {
                         telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
                         if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
                             // go to target zone C
+                            telemetry.addLine("Target_C ");
+
+
                         } else {
                             if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
                                 // go to target zone b
+                                telemetry.addLine("Target_B");
+
+
                             } else {
                                 // do something else
+
                             }
                         }
 
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                recognition.getLeft(), recognition.getTop());
+                        /*telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                          recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
+                                recognition.getRight(), recognition.getBottom());*/
                       }
                       telemetry.update();
                     }
@@ -162,6 +192,9 @@ public class Autonomous extends LinearOpMode {
             tfod.shutdown();
         }
     }
+    //public void ecoder (){
+
+   // }
 
     /**
      * Initialize the Vuforia localization engine.
