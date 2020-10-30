@@ -61,8 +61,8 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-@Disabled
+@Autonomous(name = " TensorFlow Object Detection Webcam", group = "Concept")
+//@Disabled
 public class Autonomous_test extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
@@ -104,8 +104,8 @@ public class Autonomous_test extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
-        Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
+       // Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
+        //Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
 
 
 
