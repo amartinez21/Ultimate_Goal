@@ -129,7 +129,7 @@ public class Autonomous_test extends LinearOpMode {
             // (typically 1.78 or 16/9).
 
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-            //tfod.setZoom(2.5, 1.78);
+            tfod.setZoom(2.5, 1.78);
         }
 
         /** Wait for the game to begin */
@@ -167,7 +167,7 @@ public class Autonomous_test extends LinearOpMode {
 
                         } else {
                             if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
-                                // go to target zone b
+                                // the robot will go to target zone b
                                 telemetry.addLine("Target_B");
 
 
