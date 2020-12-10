@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Hardware;
 
@@ -67,6 +68,8 @@ public class Autonomous_test extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     public static final String LABEL_SECOND_ELEMENT = "Single";
+    private DcMotor right_Drive =null;
+    private DcMotor Left_Drive =null;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -95,14 +98,21 @@ public class Autonomous_test extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    private DcMotor Left_Drive = null;
-    private DcMotor Right_Drive = null;
+
 
 
 
 
     @Override
     public void runOpMode() {
+
+      right_Drive  = hardwareMap.get(DcMotor.class, "left_drive");
+        Left_Drive = hardwareMap.get(DcMotor.class, "right_drive");
+
+
+
+        right_Drive.setDirection(DcMotor.Direction.FORWARD);
+        Left_Drive.setDirection(DcMotor.Direction.REVERSE);
 
        // Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
         //Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
@@ -129,7 +139,7 @@ public class Autonomous_test extends LinearOpMode {
             // (typically 1.78 or 16/9).
 
             // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-            //tfod.setZoom(2.5, 1.78);
+            tfod.setZoom(2.5, 1.78);
         }
 
         /** Wait for the game to begin */
@@ -141,12 +151,9 @@ public class Autonomous_test extends LinearOpMode {
 
 
             while (opModeIsActive()) {
-                /*public void encoderDrive(double Inches, double Speed, int SleepTimeA,){
 
-                    double Diameter = 11.21;
-                    double EncoderTurns = 288;
-                    double DesiredPos = Inches * EncoderTurns / Diameter;
-                }*/
+                }
+
 
 
 
@@ -163,16 +170,22 @@ public class Autonomous_test extends LinearOpMode {
                         if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
                             // go to target zone C
                             telemetry.addLine("Target_C ");
+                            encoderDrive(12,1,2300);
+                            encoderTurn(12,1,200,"Right");
+
+
 
 
                         } else {
                             if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
-                                // go to target zone b
+                                // the robot will go to target zone b
                                 telemetry.addLine("Target_B");
 
 
                             } else {
-                                // do something else
+                                // do something else or go to target A
+                                encoderDrive(11.8,1,2500);
+                                encoderDrive(12,1,2500);
 
                             }
                         }
@@ -186,15 +199,75 @@ public class Autonomous_test extends LinearOpMode {
                     }
                 }
             }
-        }
-
         if (tfod != null) {
             tfod.shutdown();
         }
-    }
-    //public void ecoder (){
 
-   // }
+
+
+        }
+
+    public void encoderDrive(double Inches, double Speed, int SleepTimeA) {
+
+        double Diameter = 11.21;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+
+        right_Drive.setTargetPosition((int) DesiredPos);
+        Left_Drive.setTargetPosition((int) DesiredPos);
+
+
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        resetEncoders();
+    }
+    public void encoderTurn(double Inches, double Speed, int SleepTime, String Direction) {
+
+
+        //12in = 90 degrees
+
+        double Diameter = 11.21;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+
+        if (Direction == "RIGHT") {
+            right_Drive.setTargetPosition((int) DesiredPos);
+            Left_Drive.setTargetPosition((int) -DesiredPos);
+
+        } else if (Direction == "LEFT") {
+            right_Drive.setTargetPosition((int) -DesiredPos);
+            Left_Drive.setTargetPosition((int) DesiredPos);
+        } else {
+            right_Drive.setTargetPosition(0);
+            Left_Drive.setTargetPosition(0);
+
+        }
+
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        sleep(SleepTime);
+
+        resetEncoders();
+
+    }
+    public void resetEncoders(){
+        right_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+
+
 
     /**
      * Initialize the Vuforia localization engine.
