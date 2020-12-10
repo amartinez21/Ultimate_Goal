@@ -170,6 +170,8 @@ public class Autonomous_test extends LinearOpMode {
                         if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
                             // go to target zone C
                             telemetry.addLine("Target_C ");
+                            encoderDrive(12,1,2300);
+                            encoderTurn(12,1,200,"Right");
 
 
 
@@ -221,10 +223,51 @@ public class Autonomous_test extends LinearOpMode {
 
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-    //public void ecoder (){
 
-   // }
+        resetEncoders();
+    }
+    public void encoderTurn(double Inches, double Speed, int SleepTime, String Direction) {
+
+
+        //12in = 90 degrees
+
+        double Diameter = 11.21;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+
+        if (Direction == "RIGHT") {
+            right_Drive.setTargetPosition((int) DesiredPos);
+            Left_Drive.setTargetPosition((int) -DesiredPos);
+
+        } else if (Direction == "LEFT") {
+            right_Drive.setTargetPosition((int) -DesiredPos);
+            Left_Drive.setTargetPosition((int) DesiredPos);
+        } else {
+            right_Drive.setTargetPosition(0);
+            Left_Drive.setTargetPosition(0);
+
+        }
+
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        sleep(SleepTime);
+
+        resetEncoders();
+
+    }
+    public void resetEncoders(){
+        right_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+
+
 
     /**
      * Initialize the Vuforia localization engine.
