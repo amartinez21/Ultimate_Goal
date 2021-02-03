@@ -45,6 +45,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -70,6 +71,8 @@ public class Autonomous_test extends LinearOpMode {
     public static final String LABEL_SECOND_ELEMENT = "Single";
     private DcMotor right_Drive =null;
     private DcMotor Left_Drive =null;
+    private DcMotor Arm =null;
+
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -106,8 +109,10 @@ public class Autonomous_test extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-      right_Drive  = hardwareMap.get(DcMotor.class, "left_drive");
-        Left_Drive = hardwareMap.get(DcMotor.class, "right_drive");
+      right_Drive  = hardwareMap.get(DcMotor.class, "right_drive");
+        Left_Drive = hardwareMap.get(DcMotor.class, "left_drive");
+        Arm = hardwareMap.get(DcMotor.class,"arm ");
+        
 
 
 
@@ -145,7 +150,9 @@ public class Autonomous_test extends LinearOpMode {
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
+
         waitForStart();
+
 
         if (opModeIsActive()) {
 
@@ -170,8 +177,9 @@ public class Autonomous_test extends LinearOpMode {
                         if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
                             // go to target zone C
                             telemetry.addLine("Target_C ");
-                            encoderDrive(12,1,2300);
-                            encoderTurn(12,1,200,"Right");
+                            
+                            encoderDrive(89.8,.5,2300);
+
 
 
 
@@ -184,8 +192,10 @@ public class Autonomous_test extends LinearOpMode {
 
                             } else {
                                 // do something else or go to target A
-                                encoderDrive(11.8,1,2500);
-                                encoderDrive(12,1,2500);
+                                sleep(1000);
+                                Target_A();
+
+
 
                             }
                         }
@@ -209,7 +219,7 @@ public class Autonomous_test extends LinearOpMode {
 
     public void encoderDrive(double Inches, double Speed, int SleepTimeA) {
 
-        double Diameter = 11.21;
+        double Diameter = 12.56;
         double EncoderTurns = 288;
         double DesiredPos = Inches * EncoderTurns / Diameter;
 
@@ -266,6 +276,13 @@ public class Autonomous_test extends LinearOpMode {
         Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    public void Target_A(){
+        telemetry.addLine("Target A ");
+        encoderDrive(11.8,1,2500);
+        encoderDrive(12,1,2500);
+
+
+    }
 
 
 
