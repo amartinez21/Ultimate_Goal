@@ -1,0 +1,104 @@
+Index: TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_test.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* Copyright (c) 2019 FIRST. All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without modification,\n * are permitted (subject to the limitations in the disclaimer below) provided that\n * the following conditions are met:\n *\n * Redistributions of source code must retain the above copyright notice, this list\n * of conditions and the following disclaimer.\n *\n * Redistributions in binary form must reproduce the above copyright notice, this\n * list of conditions and the following disclaimer in the documentation and/or\n * other materials provided with the distribution.\n *\n * Neither the name of FIRST nor the names of its contributors may be used to endorse or\n * promote products derived from this software without specific prior written permission.\n *\n * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS\n * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n * \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,\n * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\n * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE\n * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n*/\n\n\n\n\n\n\n\npackage org.firstinspires.ftc.teamcode;\n\nimport com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\nimport com.qualcomm.robotcore.eventloop.opmode.Autonomous;\nimport com.qualcomm.robotcore.eventloop.opmode.Disabled;\nimport com.qualcomm.robotcore.hardware.DcMotor;\nimport com.qualcomm.robotcore.hardware.HardwareMap;\nimport com.qualcomm.robotcore.util.Hardware;\n\nimport org.firstinspires.ftc.robotcore.external.ClassFactory;\nimport org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;\nimport org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;\nimport org.firstinspires.ftc.robotcore.external.tfod.Recognition;\nimport org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;\n\nimport java.util.List;\n\n/**\n * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to\n * determine the position of the Ultimate Goal game elements.\n *\n * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.\n * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.\n *\n * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as\n * is explained below.\n */\n@Autonomous(name = \"Concept: TensorFlow Object Detection Webcam\", group = \"Concept\")\n@Disabled\npublic class Autonomous_test extends LinearOpMode {\n    private static final String TFOD_MODEL_ASSET = \"UltimateGoal.tflite\";\n    private static final String LABEL_FIRST_ELEMENT = \"Quad\";\n    public static final String LABEL_SECOND_ELEMENT = \"Single\";\n\n    /*\n     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which\n     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.\n     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer\n     * web site at https://developer.vuforia.com/license-manager.\n     *\n     * Vuforia license keys are always 380 characters long, and look as if they contain mostly\n     * random data. As an example, here is a example of a fragment of a valid key:\n     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...\n     * Once you've obtained a license key, copy the string from the Vuforia web site\n     * and paste it in to your code on the next line, between the double quotes.\n     */\n    private static final String VUFORIA_KEY =\n            \" ATyOegL/////AAABmUhQT/JIOUluom3TiXFFDSMStTZGtJWE++LVReWvLAK6CobLktoj1VsM8h3SIcaMVvdJBg2dxRpY4Ua52dTb1gCdchH7QlUYLNPVVt/3zMyZEODIsKo8E6CYC9OFDq5oOUgH9iwdkT+fIQzfcHXU6iVfID0r/5KCWmAMqw0D7QteYU51W3uA330uvBCp09qs/zJvtDYlzsqgXxSSimiMP8cgY4jX268+Yr02HZPPrw65o7frwfNaQtEBoA4MZvu81imiuSEuMviQ45LnIlUBMWIAGfcjKpFyXf3qv2raTDhZzxXncAH1qhe2T4ivfjKzgCcuJxb+5xZUko6aoDeuKKpAGaDIGsBJZN5b2KUszuVr\";\n\n    /**\n     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia\n     * localization engine.\n     */\n    private VuforiaLocalizer vuforia;\n\n    /**\n     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object\n     * Detection engine.\n     */\n    private TFObjectDetector tfod;\n\n    private DcMotor Left_Drive = null;\n    private DcMotor Right_Drive = null;\n\n\n\n\n    @Override\n    public void runOpMode() {\n\n        Left_Drive  = hardwareMap.get(DcMotor.class, \"Left_drive\");\n        Right_Drive = hardwareMap.get(DcMotor.class, \"Right_drive\");\n\n\n\n        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that\n        // first.\n        initVuforia();\n        initTfod();\n\n        /**\n         * Activate TensorFlow Object Detection before we wait for the start command.\n         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.\n         **/\n        if (tfod != null) {\n            tfod.activate();\n\n            // The TensorFlow software will scale the input images from the camera to a lower resolution.\n            // This can result in lower detection accuracy at longer distances (> 55cm or 22\").\n            // If your target is at distance greater than 50 cm (20\") you can adjust the magnification value\n            // to artificially zoom in to the center of image.  For best results, the \"aspectRatio\" argument\n            // should be set to the value of the images used to create the TensorFlow Object Detection model\n            // (typically 1.78 or 16/9).\n\n            // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.\n            //tfod.setZoom(2.5, 1.78);\n        }\n\n        /** Wait for the game to begin */\n        telemetry.addData(\">\", \"Press Play to start op mode\");\n        telemetry.update();\n        waitForStart();\n\n        if (opModeIsActive()) {\n\n\n            while (opModeIsActive()) {\n                /*public void encoderDrive(double Inches, double Speed, int SleepTimeA,){\n\n                    double Diameter = 11.21;\n                    double EncoderTurns = 288;\n                    double DesiredPos = Inches * EncoderTurns / Diameter;\n                }*/\n\n\n\n                if (tfod != null) {\n                    // getUpdatedRecognitions() will return null if no new information is available since\n                    // the last time that call was made.\n                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();\n                    if (updatedRecognitions != null) {\n                      telemetry.addData(\"# Object Detected\", updatedRecognitions.size());\n                      // step through the list of recognitions and display boundary info.\n                      int i = 0;\n                      for (Recognition recognition : updatedRecognitions) {\n                        telemetry.addData(String.format(\"label (%d)\", i), recognition.getLabel());\n                        if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){\n                            // go to target zone C\n                            telemetry.addLine(\"Target_C \");\n\n\n                        } else {\n                            if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){\n                                // go to target zone b\n                                telemetry.addLine(\"Target_B\");\n\n\n                            } else {\n                                // do something else\n\n                            }\n                        }\n\n                        /*telemetry.addData(String.format(\"  left,top (%d)\", i), \"%.03f , %.03f\",\n                          recognition.getLeft(), recognition.getTop());\n                        telemetry.addData(String.format(\"  right,bottom (%d)\", i), \"%.03f , %.03f\",\n                                recognition.getRight(), recognition.getBottom());*/\n                      }\n                      telemetry.update();\n                    }\n                }\n            }\n        }\n\n        if (tfod != null) {\n            tfod.shutdown();\n        }\n    }\n    //public void ecoder (){\n\n   // }\n\n    /**\n     * Initialize the Vuforia localization engine.\n     */\n    private void initVuforia() {\n        /*\n         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.\n         */\n        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();\n\n        parameters.vuforiaLicenseKey = VUFORIA_KEY;\n        parameters.cameraName = hardwareMap.get(WebcamName.class, \"Webcam 1\");\n\n        //  Instantiate the Vuforia engine\n        vuforia = ClassFactory.getInstance().createVuforia(parameters);\n\n        // Loading trackables is not necessary for the TensorFlow Object Detection engine.\n    }\n\n    /**\n     * Initialize the TensorFlow Object Detection engine.\n     */\n    private void initTfod() {\n        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(\n            \"tfodMonitorViewId\", \"id\", hardwareMap.appContext.getPackageName());\n        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);\n       tfodParameters.minResultConfidence = 0.8f;\n       tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);\n       tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_test.java	(revision f9052942bb52489127093c1afd8cf97052a2f276)
++++ TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_test.java	(date 1612221149000)
+@@ -1,3 +1,4 @@
++
+ /* Copyright (c) 2019 FIRST. All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without modification,
+@@ -61,8 +62,8 @@
+  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+  * is explained below.
+  */
+-@Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+-@Disabled
++@Autonomous(name = "Concept: TensorFlow Object Detection Autonoomous ", group = "Concept")
++//@Disabled
+ public class Autonomous_test extends LinearOpMode {
+     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+     private static final String LABEL_FIRST_ELEMENT = "Quad";
+@@ -104,8 +105,8 @@
+     @Override
+     public void runOpMode() {
+ 
+-        Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
+-        Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
++        Left_Drive  = hardwareMap.get(DcMotor.class, "left_drive");
++        Right_Drive = hardwareMap.get(DcMotor.class, "right_drive");
+ 
+ 
+ 
+@@ -146,7 +147,7 @@
+                     double Diameter = 11.21;
+                     double EncoderTurns = 288;
+                     double DesiredPos = Inches * EncoderTurns / Diameter;
+-                }*/
++                */
+ 
+ 
+ 
+@@ -194,7 +195,7 @@
+     }
+     //public void ecoder (){
+ 
+-   // }
++
+ 
+     /**
+      * Initialize the Vuforia localization engine.
+Index: TeamCode/src/main/java/org/firstinspires/ftc/teamcode/test.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* Copyright (c) 2017 FIRST. All rights reserved.\n *\n * Redistribution and use in source and binary forms, with or without modification,\n * are permitted (subject to the limitations in the disclaimer below) provided that\n * the following conditions are met:\n *\n * Redistributions of source code must retain the above copyright notice, this list\n * of conditions and the following disclaimer.\n *\n * Redistributions in binary form must reproduce the above copyright notice, this\n * list of conditions and the following disclaimer in the documentation and/or\n * other materials provided with the distribution.\n *\n * Neither the name of FIRST nor the names of its contributors may be used to endorse or\n * promote products derived from this software without specific prior written permission.\n *\n * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS\n * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n * \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,\n * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\n * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE\n * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n */\n\npackage org.firstinspires.ftc.teamcode;\n\nimport com.qualcomm.robotcore.eventloop.opmode.Disabled;\nimport com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\nimport com.qualcomm.robotcore.eventloop.opmode.TeleOp;\nimport com.qualcomm.robotcore.hardware.DcMotor;\nimport com.qualcomm.robotcore.util.ElapsedTime;\nimport com.qualcomm.robotcore.util.Range;\n\n\n/**\n * This file contains an minimal example of a Linear \"OpMode\". An OpMode is a 'program' that runs in either\n * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu\n * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode\n * class is instantiated on the Robot Controller and executed.\n *\n * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot\n * It includes all the skeletal structure that all linear OpModes contain.\n *\n * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.\n * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list\n */\n\n@TeleOp(name=\"Basic: Linear OpMode\", group=\"Linear Opmode\")\n//@Disabled\npublic class test extends LinearOpMode {\n\n    // Declare OpMode members.\n    private ElapsedTime runtime = new ElapsedTime();\n    private DcMotor leftDrive = null;\n    private DcMotor rightDrive = null;\n\n    @Override\n    public void runOpMode() {\n        telemetry.addData(\"Status\", \"Initialized\");\n        telemetry.update();\n\n        // Initialize the hardware variables. Note that the strings used here as parameters\n        // to 'get' must correspond to the names assigned during the robot configuration\n        // step (using the FTC Robot Controller app on the phone).\n        leftDrive  = hardwareMap.get(DcMotor.class, \"left_drive\");\n        rightDrive = hardwareMap.get(DcMotor.class, \"right_drive\");\n\n        // Most robots need the motor on one side to be reversed to drive forward\n        // Reverse the motor that runs backwards when connected directly to the battery\n        leftDrive.setDirection(DcMotor.Direction.FORWARD);\n        rightDrive.setDirection(DcMotor.Direction.REVERSE);\n\n        // Wait for the game to start (driver presses PLAY)\n        waitForStart();\n        runtime.reset();\n\n        // run until the end of the match (driver presses STOP)\n        while (opModeIsActive()) {\n\n            // Setup a variable for each drive wheel to save power level for telemetry\n            double leftPower;\n            double rightPower;\n\n            // Choose to drive using either Tank Mode, or POV Mode\n            // Comment out the method that's not used.  The default below is POV.\n\n            // POV Mode uses left stick to go forward, and right stick to turn.\n            // - This uses basic math to combine motions and is easier to drive straight.\n            double drive = gamepad1.left_stick_y;\n            double turn  =  gamepad1.right_stick_x;\n            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;\n            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;\n\n            // Tank Mode uses one stick to control each wheel.\n            // - This requires no math, but it is hard to drive forward slowly and keep straight.\n            // leftPower  = -gamepad1.left_stick_y ;\n            // rightPower = -gamepad1.right_stick_y ;\n\n            // Send calculated power to wheels\n            leftDrive.setPower(leftPower);\n            rightDrive.setPower(rightPower);\n\n            // Show the elapsed game time and wheel power.\n            telemetry.addData(\"Status\", \"Run Time: \" + runtime.toString());\n            telemetry.addData(\"Motors\", \"left (%.2f), right (%.2f)\", leftPower, rightPower);\n            telemetry.update();\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- TeamCode/src/main/java/org/firstinspires/ftc/teamcode/test.java	(revision f9052942bb52489127093c1afd8cf97052a2f276)
++++ TeamCode/src/main/java/org/firstinspires/ftc/teamcode/test.java	(date 1612221108000)
+@@ -82,6 +82,7 @@
+         // run until the end of the match (driver presses STOP)
+         while (opModeIsActive()) {
+ 
++
+             // Setup a variable for each drive wheel to save power level for telemetry
+             double leftPower;
+             double rightPower;
+@@ -93,6 +94,7 @@
+             // - This uses basic math to combine motions and is easier to drive straight.
+             double drive = gamepad1.left_stick_y;
+             double turn  =  gamepad1.right_stick_x;
++
+             leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
+             rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+ 
+@@ -110,5 +112,6 @@
+             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+             telemetry.update();
+         }
++
+     }
+ }
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"CMakeSettings\">\n    <configurations>\n      <configuration PROFILE_NAME=\"Debug\" CONFIG_NAME=\"Debug\" />\n    </configurations>\n  </component>\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_1_7\" default=\"true\" project-jdk-name=\"1.8\" project-jdk-type=\"JavaSDK\">\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\n  </component>\n  <component name=\"ProjectType\">\n    <option name=\"id\" value=\"Android\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision f9052942bb52489127093c1afd8cf97052a2f276)
++++ .idea/misc.xml	(date 1610504902000)
+@@ -5,7 +5,7 @@
+       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+     </configurations>
+   </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
