@@ -79,6 +79,7 @@ public class test extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
@@ -93,8 +94,8 @@ public class test extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = gamepad1.left_stick_y;
             double turn  =  gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+            leftPower    = getAdjustedPower(drive + turn);
+            rightPower   = getAdjustedPower(drive - turn);
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -105,10 +106,30 @@ public class test extends LinearOpMode {
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
 
+
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.update();
         }
     }
+// Judges whether right stick is pressed and adjusts the speed accordingly
+    private double getAdjustedPower(double power) {
+        if (gamepad1.right_stick_button) {
+            return Range.clip(power, -.60, .60);
+        } else {
+            return Range.clip(power, -1.0, 1.0);
+        }
+    }
+
+   // private double getAdjustedPowerV2(double power) {
+   //     double scale = 1.0;
+   //     if (gamepad1.right_stick_button) {
+   //         scale = .5;
+   //     } else {
+   //         scale = 1.0;
+   //     }
+   //     return Range.clip(power, -1.0, 1.0)*scale;
+   // }
 }
