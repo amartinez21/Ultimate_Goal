@@ -29,7 +29,7 @@ public class Intake extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        double power = 0.5;
+        double power = 0.25;
 
         while (opModeIsActive()) {
 
