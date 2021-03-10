@@ -63,7 +63,7 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = " TensorFlow Object Detection Webcam", group = "Concept")
+@Autonomous(name = " TensorFlow Object Detection Autonomous ", group = "Concept")
 //@Disabled
 public class Autonomous_test extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -111,7 +111,7 @@ public class Autonomous_test extends LinearOpMode {
 
       right_Drive  = hardwareMap.get(DcMotor.class, "right_drive");
         Left_Drive = hardwareMap.get(DcMotor.class, "left_drive");
-        Arm = hardwareMap.get(DcMotor.class,"arm ");
+        //Arm = hardwareMap.get(DcMotor.class,"arm ");
         
 
 
@@ -157,9 +157,7 @@ public class Autonomous_test extends LinearOpMode {
         if (opModeIsActive()) {
 
 
-            while (opModeIsActive()) {
 
-                }
 
 
 
@@ -177,8 +175,30 @@ public class Autonomous_test extends LinearOpMode {
                         if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
                             // go to target zone C
                             telemetry.addLine("Target_C ");
-                            
-                            encoderDrive(89.8,.5,2300);
+                            //right_Drive.setPower(1);
+                            //Left_Drive.setPower(1);
+                           // sleep(2000);
+                            sleep(1000);
+                           Forward(56,1);
+                            sleep(100);
+                            //pick up the wobble goal and drive forward  to Target C
+                            sleep(1800);
+                            //arm("DOWN",1000);
+                           // resetEncoders();
+                            //Reverse(10,-1);
+                            //sleep(1000);
+
+                            resetEncoders();
+                            // reverse to the launch zone
+                            sleep(2500);
+                           Reverse(-.87, 1);
+                            sleep(700);
+                            sleep(480);
+
+                            //90 100
+                            //Drive(-20,1);
+
+                            resetEncoders();
 
 
 
@@ -188,12 +208,17 @@ public class Autonomous_test extends LinearOpMode {
                             if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
                                 // the robot will go to target zone b
                                 telemetry.addLine("Target_B");
+                                sleep(1000);
+                                Forward(40,1);
+                                sleep(1000);
+                                resetEncoders();
+
 
 
                             } else {
                                 // do something else or go to target A
                                 sleep(1000);
-                                Target_A();
+                                //Target_A();
 
 
 
@@ -204,11 +229,11 @@ public class Autonomous_test extends LinearOpMode {
                           recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                 recognition.getRight(), recognition.getBottom());*/
-                      }
-                      telemetry.update();
                     }
+                    telemetry.update();
                 }
             }
+        }
         if (tfod != null) {
             tfod.shutdown();
         }
@@ -217,26 +242,53 @@ public class Autonomous_test extends LinearOpMode {
 
         }
 
-    public void encoderDrive(double Inches, double Speed, int SleepTimeA) {
+    public void Forward (double Inches, double Speed) {
 
-        double Diameter = 12.56;
+        double Diameter = 6.28;
         double EncoderTurns = 288;
         double DesiredPos = Inches * EncoderTurns / Diameter;
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //hLeft_Drive.setDirection(REVERSE);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         right_Drive.setTargetPosition((int) DesiredPos);
         Left_Drive.setTargetPosition((int) DesiredPos);
 
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         right_Drive.setPower(Speed);
         Left_Drive.setPower(Speed);
 
+//
+
+    }
+    public void Reverse (double Inches, double Speed) {
+
+        double Diameter = 6.28;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //Left_Drive.setDirection(direction);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        right_Drive.setTargetPosition((int) DesiredPos);
+        Left_Drive.setTargetPosition((int) DesiredPos);
 
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        resetEncoders();
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
     }
-    public void encoderTurn(double Inches, double Speed, int SleepTime, String Direction) {
+        public void encoderTurn(double Inches, double Speed, int SleepTime,String Direction) {
 
 
         //12in = 90 degrees
@@ -247,10 +299,10 @@ public class Autonomous_test extends LinearOpMode {
 
         if (Direction == "RIGHT") {
             right_Drive.setTargetPosition((int) DesiredPos);
-            Left_Drive.setTargetPosition((int) -DesiredPos);
+            Left_Drive.setTargetPosition((int) DesiredPos);
 
         } else if (Direction == "LEFT") {
-            right_Drive.setTargetPosition((int) -DesiredPos);
+            right_Drive.setTargetPosition((int) DesiredPos);
             Left_Drive.setTargetPosition((int) DesiredPos);
         } else {
             right_Drive.setTargetPosition(0);
@@ -274,17 +326,36 @@ public class Autonomous_test extends LinearOpMode {
     public void resetEncoders(){
         right_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
-    public void Target_A(){
-        telemetry.addLine("Target A ");
-        encoderDrive(11.8,1,2500);
-        encoderDrive(12,1,2500);
-
 
     }
 
+    //public void Target_A(){
+       // telemetry.addLine("Target A ");
+       // Drive(11.8,1);
+        //Drive(12,1);
 
+
+    //}
+    public void arm(String position, int SleepTime) {
+
+        sleep(SleepTime);
+
+        if (position == "UP") {
+            Arm.setPower(.1);
+            sleep(300);
+            Arm.setPower(0);
+        } else if (position == "DOWN") {
+            Arm.setPower(-1);
+            sleep(300);
+            Arm.setPower(0);
+
+        } else {
+            Arm.setPower(0);
+
+
+
+        }
+    }
 
     /**
      * Initialize the Vuforia localization engine.
