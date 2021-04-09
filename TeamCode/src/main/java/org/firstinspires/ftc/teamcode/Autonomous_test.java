@@ -43,7 +43,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Hardware;
-
+import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -72,6 +72,9 @@ public class Autonomous_test extends LinearOpMode {
     private DcMotor right_Drive =null;
     private DcMotor Left_Drive =null;
     private DcMotor Arm =null;
+    public Servo claw = null;
+
+
 
 
     /*
@@ -111,8 +114,9 @@ public class Autonomous_test extends LinearOpMode {
 
       right_Drive  = hardwareMap.get(DcMotor.class, "right_drive");
         Left_Drive = hardwareMap.get(DcMotor.class, "left_drive");
-        //Arm = hardwareMap.get(DcMotor.class,"arm ");
-        
+        Arm = hardwareMap.get(DcMotor.class,"arm ");
+        claw= hardwareMap.get(Servo.class,"claw");
+
 
 
 
@@ -178,27 +182,8 @@ public class Autonomous_test extends LinearOpMode {
                             //right_Drive.setPower(1);
                             //Left_Drive.setPower(1);
                            // sleep(2000);
+                            Target_C();
                             sleep(1000);
-                           Forward(56,1);
-                            sleep(100);
-                            //pick up the wobble goal and drive forward  to Target C
-                            sleep(1800);
-                            //arm("DOWN",1000);
-                           // resetEncoders();
-                            //Reverse(10,-1);
-                            //sleep(1000);
-
-                            resetEncoders();
-                            // reverse to the launch zone
-                            sleep(2500);
-                           Reverse(-.87, 1);
-                            sleep(700);
-                            sleep(480);
-
-                            //90 100
-                            //Drive(-20,1);
-
-                            resetEncoders();
 
 
 
@@ -208,17 +193,48 @@ public class Autonomous_test extends LinearOpMode {
                             if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
                                 // the robot will go to target zone b
                                 telemetry.addLine("Target_B");
+                                Target_B();
+                                tfod.shutdown();
                                 sleep(1000);
-                                Forward(40,1);
-                                sleep(1000);
-                                resetEncoders();
 
 
 
                             } else {
                                 // do something else or go to target A
+                                telemetry.addLine("Target A ");
+                                // TODO: 4/7/21 finich the autonoumous for target a by the end of the day
+                                claw .setPosition(270);
+                                sleep(500);
+                                tfod.shutdown();
                                 sleep(1000);
-                                //Target_A();
+                                claw.setPosition(0);
+                                sleep(3000);
+                                arm("UP",100);
+                                Forward(40,.5);
+                                sleep(1000);
+                                resetEncoders();
+                                Left(.6,.5);
+                                sleep(530);//
+                                resetEncoders();
+                                sleep(100);
+                                Forward(.8,.5);
+                                sleep(50);
+                                resetEncoders();
+                                sleep(2000);
+                                claw.setPosition(270);
+                                sleep(1000);
+                                arm("DOWN",300);
+                                resetEncoders();
+                                sleep(20);
+                                Reverse(.3,.5);
+                                sleep(50);
+
+
+
+                                
+
+
+
 
 
 
@@ -278,8 +294,8 @@ public class Autonomous_test extends LinearOpMode {
         right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        right_Drive.setTargetPosition((int) DesiredPos);
-        Left_Drive.setTargetPosition((int) DesiredPos);
+        right_Drive.setTargetPosition((int) -DesiredPos);
+        Left_Drive.setTargetPosition((int) -DesiredPos);
 
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -323,6 +339,137 @@ public class Autonomous_test extends LinearOpMode {
         resetEncoders();
 
     }
+    public void Target_C(){
+        //right_Drive.setPower(1);
+        //Left_Drive.setPower(1);
+        // sleep(2000);
+        sleep(1000);
+        claw.setPosition(0);
+        sleep(3000);
+        arm("UP",100);
+
+        Forward(52,1);
+        sleep(100);
+        //pick up the wobble goal and drive forward  to Target C
+        claw.setPosition(0);
+        arm("DOWN",300);
+
+        sleep(1800);
+
+        Reverse(10,-1);
+        sleep(1000);
+
+        resetEncoders();
+        // reverse to the launch zone
+        sleep(2500);
+        Reverse(-.87, 1);
+        sleep(700);
+        sleep(480);
+
+        //90 100
+        //Drive(-20,1);
+
+        resetEncoders();
+
+    }
+    public void Target_B(){
+        tfod.shutdown();
+        sleep(1000);
+        claw.setPosition(0);
+        sleep(3000);
+        arm("UP",100);
+        Forward(40,.5);
+        sleep(1000);
+        resetEncoders();
+        Left(.6,.5);
+        sleep(530);//
+        resetEncoders();
+        sleep(100);
+        Forward(.8,.5);
+        sleep(80);
+      resetEncoders();
+      sleep(2000);
+        claw.setPosition(270);
+        sleep(1000);
+        arm("DOWN",300);
+        resetEncoders();
+        sleep(20);
+        Reverse(.3,.5);
+        sleep(50);
+
+
+
+    }
+    public void Target_A(){
+        sleep(1000);
+        arm("UP",1000);
+        sleep(100);
+        Forward(40,.5 );
+
+
+        sleep(1000);
+        arm("DOWN",100);
+        sleep(100);
+        claw.setPosition(0);
+        sleep(100);
+        arm("UP",100);
+        sleep(100);
+        Reverse(4,1);
+        resetEncoders();
+        arm("DOWN",100);
+
+
+
+    }
+
+    public void RIGHT(double Inches , double Speed) {
+
+            double Diameter = 6.28;
+            double EncoderTurns = 288;
+            double DesiredPos = Inches * EncoderTurns / Diameter;
+
+
+        resetEncoders();
+            //right_Drive.setDirection(direction);
+            //hLeft_Drive.setDirection(REVERSE);
+
+            right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            right_Drive.setTargetPosition((int) DesiredPos);
+            Left_Drive.setTargetPosition((int) -DesiredPos);
+
+            right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            right_Drive.setPower(Speed);
+            Left_Drive.setPower(Speed);
+
+        }
+    public void Left (double Inches , double Speed) {
+
+        double Diameter = 6.28;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+
+
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //hLeft_Drive.setDirection(REVERSE);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        right_Drive.setTargetPosition((int) -DesiredPos);
+        Left_Drive.setTargetPosition((int) DesiredPos);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
+    }
     public void resetEncoders(){
         right_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -341,12 +488,12 @@ public class Autonomous_test extends LinearOpMode {
         sleep(SleepTime);
 
         if (position == "UP") {
-            Arm.setPower(.1);
+            Arm.setPower(-.5);
             sleep(300);
-            Arm.setPower(0);
+
         } else if (position == "DOWN") {
-            Arm.setPower(-1);
-            sleep(300);
+            Arm.setPower(.5);
+            sleep(400);
             Arm.setPower(0);
 
         } else {
