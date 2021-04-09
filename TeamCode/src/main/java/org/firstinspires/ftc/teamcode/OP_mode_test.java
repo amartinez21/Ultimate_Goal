@@ -51,7 +51,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode_v3 ", group="Linear Opmode")
+@TeleOp(name="New op mode ", group="Linear Opmode")
 //@Disabled
 public class OP_mode_test extends LinearOpMode {
 
@@ -86,8 +86,8 @@ public class OP_mode_test extends LinearOpMode {
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        motor = hardwareMap.get(DcMotor.class, "motor");
-        servo = hardwareMap.get(Servo.class, "servo");
+        motor = hardwareMap.get(DcMotor.class, "arm");
+        servo = hardwareMap.get(Servo.class, "claw");
 
         double Power = 1;
 
@@ -120,8 +120,8 @@ public class OP_mode_test extends LinearOpMode {
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
-            motor = hardwareMap.get(DcMotor.class, "motor");
-            servo = hardwareMap.get(Servo.class, "servo");
+            motor = hardwareMap.get(DcMotor.class, "arm");
+            servo = hardwareMap.get(Servo.class, "claw");
 
             waitForStart();
             runtime.reset();

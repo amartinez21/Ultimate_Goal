@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 
 
@@ -43,7 +43,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Hardware;
-
+import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -63,15 +63,18 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = " TensorFlow Object Detection Webcam", group = "Concept")
+@Autonomous(name = " Autonomous Testing 1 ", group = "Concept")
 //@Disabled
-public class Autonomous_test extends LinearOpMode {
+public class Automous_1 extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     public static final String LABEL_SECOND_ELEMENT = "Single";
     private DcMotor right_Drive =null;
     private DcMotor Left_Drive =null;
     private DcMotor Arm =null;
+    public Servo claw = null;
+
+
 
 
     /*
@@ -109,19 +112,17 @@ public class Autonomous_test extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-      right_Drive  = hardwareMap.get(DcMotor.class, "right_drive");
+        right_Drive = hardwareMap.get(DcMotor.class, "right_drive");
         Left_Drive = hardwareMap.get(DcMotor.class, "left_drive");
-        Arm = hardwareMap.get(DcMotor.class,"arm ");
-        
-
+        Arm = hardwareMap.get(DcMotor.class, "arm ");
+        claw = hardwareMap.get(Servo.class, "claw");
 
 
         right_Drive.setDirection(DcMotor.Direction.FORWARD);
         Left_Drive.setDirection(DcMotor.Direction.REVERSE);
 
-       // Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
+        // Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
         //Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
-
 
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -157,86 +158,128 @@ public class Autonomous_test extends LinearOpMode {
         if (opModeIsActive()) {
 
 
-            while (opModeIsActive()) {
-
-                }
-
-
-
-
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
-                      // step through the list of recognitions and display boundary info.
-                      int i = 0;
-                      for (Recognition recognition : updatedRecognitions) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
                         telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
+                        if (recognition.getLabel().equals(LABEL_FIRST_ELEMENT)) {
                             // go to target zone C
                             telemetry.addLine("Target_C ");
-                            
-                            encoderDrive(89.8,.5,2300);
+                            //right_Drive.setPower(1);
+                            //Left_Drive.setPower(1);
+                            // sleep(2000);
+                            Target_C();
+                            sleep(1000);
 
 
-
+                        } else if (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
+                            // the robot will go to target zone b
+                            telemetry.addLine("Target_B");
+                            Target_B();
+                            tfod.shutdown();
+                            sleep(1000);
 
 
                         } else {
-                            if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
-                                // the robot will go to target zone b
-                                telemetry.addLine("Target_B");
+                            // do something else or go to target A
+                            telemetry.addLine("Target A ");
+                            // TODO: 4/7/21 finich the autonoumous for target a by the end of the day
+                            claw.setPosition(270);
+                            sleep(500);
+                            tfod.shutdown();
+                            sleep(1000);
+                            claw.setPosition(0);
+                            sleep(3000);
+                            arm("UP", 100);
+                            Forward(40, .5);
+                            sleep(1000);
+                            resetEncoders();
+                            Left(.6, .5);
+                            sleep(530);//
+                            resetEncoders();
+                            sleep(100);
+                            Forward(.8, .5);
+                            sleep(50);
+                            resetEncoders();
+                            sleep(2000);
+                            claw.setPosition(270);
+                            sleep(1000);
+                            arm("DOWN", 300);
+                            resetEncoders();
+                            sleep(20);
+                            Reverse(.3, .5);
+                            sleep(50);
 
 
-                            } else {
-                                // do something else or go to target A
-                                sleep(1000);
-                                Target_A();
-
-
-
-                            }
                         }
+                    }
 
                         /*telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                           recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                 recognition.getRight(), recognition.getBottom());*/
-                      }
-                      telemetry.update();
-                    }
                 }
+                telemetry.update();
             }
+        }
         if (tfod != null) {
             tfod.shutdown();
         }
+    }
 
+    public void Forward (double Inches, double Speed) {
 
-
-        }
-
-    public void encoderDrive(double Inches, double Speed, int SleepTimeA) {
-
-        double Diameter = 12.56;
+        double Diameter = 6.28;
         double EncoderTurns = 288;
         double DesiredPos = Inches * EncoderTurns / Diameter;
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //hLeft_Drive.setDirection(REVERSE);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         right_Drive.setTargetPosition((int) DesiredPos);
         Left_Drive.setTargetPosition((int) DesiredPos);
 
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         right_Drive.setPower(Speed);
         Left_Drive.setPower(Speed);
 
+//
+
+    }
+    public void Reverse (double Inches, double Speed) {
+
+        double Diameter = 6.28;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //Left_Drive.setDirection(direction);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        right_Drive.setTargetPosition((int) -DesiredPos);
+        Left_Drive.setTargetPosition((int) -DesiredPos);
 
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        resetEncoders();
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
     }
-    public void encoderTurn(double Inches, double Speed, int SleepTime, String Direction) {
+    public void encoderTurn(double Inches, double Speed, int SleepTime,String Direction) {
 
 
         //12in = 90 degrees
@@ -247,10 +290,10 @@ public class Autonomous_test extends LinearOpMode {
 
         if (Direction == "RIGHT") {
             right_Drive.setTargetPosition((int) DesiredPos);
-            Left_Drive.setTargetPosition((int) -DesiredPos);
+            Left_Drive.setTargetPosition((int) DesiredPos);
 
         } else if (Direction == "LEFT") {
-            right_Drive.setTargetPosition((int) -DesiredPos);
+            right_Drive.setTargetPosition((int) DesiredPos);
             Left_Drive.setTargetPosition((int) DesiredPos);
         } else {
             right_Drive.setTargetPosition(0);
@@ -271,20 +314,170 @@ public class Autonomous_test extends LinearOpMode {
         resetEncoders();
 
     }
+    public void Target_C(){
+        //right_Drive.setPower(1);
+        //Left_Drive.setPower(1);
+        // sleep(2000);
+        sleep(1000);
+        claw.setPosition(0);
+        sleep(3000);
+        arm("UP",100);
+
+        Forward(52,1);
+        sleep(100);
+        //pick up the wobble goal and drive forward  to Target C
+        claw.setPosition(0);
+        arm("DOWN",300);
+
+        sleep(1800);
+
+        Reverse(10,-1);
+        sleep(1000);
+
+        resetEncoders();
+        // reverse to the launch zone
+        sleep(2500);
+        Reverse(-.87, 1);
+        sleep(700);
+        sleep(480);
+
+        //90 100
+        //Drive(-20,1);
+
+        resetEncoders();
+
+    }
+    public void Target_B(){
+        tfod.shutdown();
+        sleep(1000);
+        claw.setPosition(0);
+        sleep(3000);
+        arm("UP",100);
+        Forward(40,.5);
+        sleep(1000);
+        resetEncoders();
+        Left(.6,.5);
+        sleep(530);//
+        resetEncoders();
+        sleep(100);
+        Forward(.8,.5);
+        sleep(80);
+        resetEncoders();
+        sleep(2000);
+        claw.setPosition(270);
+        sleep(1000);
+        arm("DOWN",300);
+        resetEncoders();
+        sleep(20);
+        Reverse(.3,.5);
+        sleep(50);
+
+
+
+    }
+    public void Target_A(){
+        sleep(1000);
+        arm("UP",1000);
+        sleep(100);
+        Forward(40,.5 );
+
+
+        sleep(1000);
+        arm("DOWN",100);
+        sleep(100);
+        claw.setPosition(0);
+        sleep(100);
+        arm("UP",100);
+        sleep(100);
+        Reverse(4,1);
+        resetEncoders();
+        arm("DOWN",100);
+
+
+
+    }
+
+    public void RIGHT(double Inches , double Speed) {
+
+        double Diameter = 6.28;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+
+
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //hLeft_Drive.setDirection(REVERSE);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        right_Drive.setTargetPosition((int) DesiredPos);
+        Left_Drive.setTargetPosition((int) -DesiredPos);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
+    }
+    public void Left (double Inches , double Speed) {
+
+        double Diameter = 6.28;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
+
+
+        resetEncoders();
+        //right_Drive.setDirection(direction);
+        //hLeft_Drive.setDirection(REVERSE);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        right_Drive.setTargetPosition((int) -DesiredPos);
+        Left_Drive.setTargetPosition((int) DesiredPos);
+
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
+
+    }
     public void resetEncoders(){
         right_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
-    public void Target_A(){
-        telemetry.addLine("Target A ");
-        encoderDrive(11.8,1,2500);
-        encoderDrive(12,1,2500);
-
 
     }
 
+    //public void Target_A(){
+    // telemetry.addLine("Target A ");
+    // Drive(11.8,1);
+    //Drive(12,1);
 
+
+    //}
+    public void arm(String position, int SleepTime) {
+
+        sleep(SleepTime);
+
+        if (position == "UP") {
+            Arm.setPower(-.5);
+            sleep(300);
+
+        } else if (position == "DOWN") {
+            Arm.setPower(.5);
+            sleep(400);
+            Arm.setPower(0);
+
+        } else {
+            Arm.setPower(0);
+
+
+
+        }
+    }
 
     /**
      * Initialize the Vuforia localization engine.
@@ -309,10 +502,10 @@ public class Autonomous_test extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-       tfodParameters.minResultConfidence = 0.8f;
-       tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-       tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }
