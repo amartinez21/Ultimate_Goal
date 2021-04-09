@@ -14,7 +14,7 @@ public class wobbleGoal extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motor = null;
     //Servo info
-    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static final double INCREMENT   = 0.02;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  1.0;     // Maximum rotational position
     static final double MIN_POS     =  0.0;     // Minimum rotational position
@@ -26,10 +26,8 @@ public class wobbleGoal extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        motor = hardwareMap.get(DcMotor.class, "wobbleMotor");
+        motor = hardwareMap.get(DcMotor.class, "motor");
         servo = hardwareMap.get(Servo.class, "servo");
-
-
 
         waitForStart();
         runtime.reset();
@@ -39,9 +37,12 @@ public class wobbleGoal extends LinearOpMode {
         while (opModeIsActive()) {
             motor.setPower(0);
             if (gamepad1.dpad_up) {
-                motor.setDirection(DcMotor.Direction.FORWARD);
-                motor.setPower(Range.clip(Power, -0.25, 0.25));
+                motor.setDirection(DcMotor.Direction.REVERSE);
+                motor.setPower(Range.clip(Power, -1.00, 1.00));
             } else if (gamepad1.dpad_down) {
+                motor.setDirection(DcMotor.Direction.FORWARD);
+                motor.setPower(Range.clip(Power, -1.00, 1.00));
+            } else if (gamepad1.a) {
                 motor.setDirection(DcMotor.Direction.REVERSE);
                 motor.setPower(Range.clip(Power, -0.25, 0.25));
             } else if (gamepad1.dpad_left) {
