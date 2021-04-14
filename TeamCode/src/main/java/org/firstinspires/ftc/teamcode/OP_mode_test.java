@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 /**
@@ -50,14 +51,25 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode_v3 ", group="Linear Opmode")
-@Disabled
-public class test extends LinearOpMode {
+@TeleOp(name="New op mode ", group="Linear Opmode")
+//@Disabled
+public class OP_mode_test extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
+    // Wobble Stuff
+    private DcMotor motor = null;
+    //Servo info
+    static final double INCREMENT = 0.02;     // amount to slew servo each CYCLE_MS cycle
+    static final int CYCLE_MS = 50;     // period of each cycle
+    static final double MAX_POS = 1.0;     // Maximum rotational position
+    static final double MIN_POS = 0.0;     // Minimum rotational position
+    //defining servo vars
+    Servo servo;
+    double position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
+    boolean rampUp = true;
 
     @Override
     public void runOpMode() {
@@ -67,13 +79,17 @@ public class test extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        motor = hardwareMap.get(DcMotor.class, "arm");
+        servo = hardwareMap.get(Servo.class, "claw");
+
+        double Power = 1;
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -92,9 +108,9 @@ public class test extends LinearOpMode {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = gamepad1.left_stick_y;
-            double turn  =  gamepad1.right_stick_x;
-            leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+            double turn = gamepad1.right_stick_x;
+            leftPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightPower = Range.clip(drive - turn, -1.0, 1.0);
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -104,11 +120,47 @@ public class test extends LinearOpMode {
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
+            motor = hardwareMap.get(DcMotor.class, "arm");
+            servo = hardwareMap.get(Servo.class, "claw");
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.update();
+            waitForStart();
+            runtime.reset();
+
+
+            while (opModeIsActive()) {
+                motor.setPower(0);
+                if (gamepad1.dpad_up) {
+                    motor.setDirection(DcMotor.Direction.REVERSE);
+                    motor.setPower(Range.clip(Power, -1.00, 1.00));
+                } else if (gamepad1.dpad_down) {
+                    motor.setDirection(DcMotor.Direction.FORWARD);
+                    motor.setPower(Range.clip(Power, -1.00, 1.00));
+                } else if (gamepad1.a) {
+                    motor.setDirection(DcMotor.Direction.REVERSE);
+                    motor.setPower(Range.clip(Power, -0.25, 0.25));
+                } else if (gamepad1.dpad_left) {
+                    if (position < MAX_POS) {
+                        position += INCREMENT;
+                    }
+                } else if (gamepad1.dpad_right) {
+                    if (position > MIN_POS) {
+                        position -= INCREMENT;
+                    }
+                } else {
+                    motor.setPower(0);
+                }
+
+                servo.setPosition(position);
+                sleep(CYCLE_MS);
+                idle();
+
+
+                // Show the elapsed game time and wheel power.
+                telemetry.addData("Servo Position", "%5.2f", position);
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+                telemetry.update();
+            }
         }
     }
 }

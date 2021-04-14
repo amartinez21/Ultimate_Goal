@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*/
+ */
 
 
 
@@ -63,16 +63,18 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = " TensorFlow Object Detection Autonomous ", group = "Concept")
+@Autonomous(name = " Autonomous Testing 1 ", group = "Concept")
 //@Disabled
-public class Autonomous_test extends LinearOpMode {
+public class Automous_1 extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     public static final String LABEL_SECOND_ELEMENT = "Single";
-    private DcMotor right_Drive = null;
-    private DcMotor Left_Drive = null;
-    private DcMotor Arm = null;
+    private DcMotor right_Drive =null;
+    private DcMotor Left_Drive =null;
+    private DcMotor Arm =null;
     public Servo claw = null;
+
+
 
 
     /*
@@ -103,9 +105,12 @@ public class Autonomous_test extends LinearOpMode {
     private TFObjectDetector tfod;
 
 
+
+
+
+
     @Override
     public void runOpMode() {
-//TODO remember that each of the hardware configuration has to be the same
 
         right_Drive = hardwareMap.get(DcMotor.class, "right_drive");
         Left_Drive = hardwareMap.get(DcMotor.class, "left_drive");
@@ -173,8 +178,7 @@ public class Autonomous_test extends LinearOpMode {
                             sleep(1000);
 
 
-                        }
-                        if (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
+                        } else if (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
                             // the robot will go to target zone b
                             telemetry.addLine("Target_B");
                             Target_B();
@@ -185,8 +189,7 @@ public class Autonomous_test extends LinearOpMode {
                         } else {
                             // do something else or go to target A
                             telemetry.addLine("Target A ");
-                            //TODO:REMEMBER THAT WE NEED TO FIX  THE  AUTONOMOUS  FOT THE TARGET A
-
+                            // TODO: 4/7/21 finich the autonoumous for target a by the end of the day
                             claw.setPosition(270);
                             sleep(500);
                             tfod.shutdown();
@@ -225,16 +228,10 @@ public class Autonomous_test extends LinearOpMode {
                 telemetry.update();
             }
         }
-
-        if(tfod !=null)
-
-    {
-        tfod.shutdown();
+        if (tfod != null) {
+            tfod.shutdown();
+        }
     }
-
-}
-
-
 
     public void Forward (double Inches, double Speed) {
 
@@ -282,7 +279,7 @@ public class Autonomous_test extends LinearOpMode {
         Left_Drive.setPower(Speed);
 
     }
-        public void encoderTurn(double Inches, double Speed, int SleepTime,String Direction) {
+    public void encoderTurn(double Inches, double Speed, int SleepTime,String Direction) {
 
 
         //12in = 90 degrees
@@ -365,8 +362,8 @@ public class Autonomous_test extends LinearOpMode {
         sleep(100);
         Forward(.8,.5);
         sleep(80);
-      resetEncoders();
-      sleep(2000);
+        resetEncoders();
+        sleep(2000);
         claw.setPosition(270);
         sleep(1000);
         arm("DOWN",300);
@@ -402,28 +399,28 @@ public class Autonomous_test extends LinearOpMode {
 
     public void RIGHT(double Inches , double Speed) {
 
-            double Diameter = 6.28;
-            double EncoderTurns = 288;
-            double DesiredPos = Inches * EncoderTurns / Diameter;
+        double Diameter = 6.28;
+        double EncoderTurns = 288;
+        double DesiredPos = Inches * EncoderTurns / Diameter;
 
 
         resetEncoders();
-            //right_Drive.setDirection(direction);
-            //hLeft_Drive.setDirection(REVERSE);
+        //right_Drive.setDirection(direction);
+        //hLeft_Drive.setDirection(REVERSE);
 
-            right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            right_Drive.setTargetPosition((int) DesiredPos);
-            Left_Drive.setTargetPosition((int) -DesiredPos);
+        right_Drive.setTargetPosition((int) DesiredPos);
+        Left_Drive.setTargetPosition((int) -DesiredPos);
 
-            right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            right_Drive.setPower(Speed);
-            Left_Drive.setPower(Speed);
+        right_Drive.setPower(Speed);
+        Left_Drive.setPower(Speed);
 
-        }
+    }
     public void Left (double Inches , double Speed) {
 
         double Diameter = 6.28;
@@ -455,9 +452,9 @@ public class Autonomous_test extends LinearOpMode {
     }
 
     //public void Target_A(){
-       // telemetry.addLine("Target A ");
-       // Drive(11.8,1);
-        //Drive(12,1);
+    // telemetry.addLine("Target A ");
+    // Drive(11.8,1);
+    //Drive(12,1);
 
 
     //}
@@ -505,10 +502,10 @@ public class Autonomous_test extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-       tfodParameters.minResultConfidence = 0.8f;
-       tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-       tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }
