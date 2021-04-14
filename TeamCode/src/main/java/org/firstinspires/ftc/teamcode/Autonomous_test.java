@@ -69,12 +69,10 @@ public class Autonomous_test extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     public static final String LABEL_SECOND_ELEMENT = "Single";
-    private DcMotor right_Drive =null;
-    private DcMotor Left_Drive =null;
-    private DcMotor Arm =null;
+    private DcMotor right_Drive = null;
+    private DcMotor Left_Drive = null;
+    private DcMotor Arm = null;
     public Servo claw = null;
-
-
 
 
     /*
@@ -105,27 +103,21 @@ public class Autonomous_test extends LinearOpMode {
     private TFObjectDetector tfod;
 
 
-
-
-
-
     @Override
     public void runOpMode() {
+//TODO remember that each of the hardware configuration has to be the same
 
-      right_Drive  = hardwareMap.get(DcMotor.class, "right_drive");
+        right_Drive = hardwareMap.get(DcMotor.class, "right_drive");
         Left_Drive = hardwareMap.get(DcMotor.class, "left_drive");
-        Arm = hardwareMap.get(DcMotor.class,"arm ");
-        claw= hardwareMap.get(Servo.class,"claw");
-
-
+        Arm = hardwareMap.get(DcMotor.class, "arm ");
+        claw = hardwareMap.get(Servo.class, "claw");
 
 
         right_Drive.setDirection(DcMotor.Direction.FORWARD);
         Left_Drive.setDirection(DcMotor.Direction.REVERSE);
 
-       // Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
+        // Left_Drive  = hardwareMap.get(DcMotor.class, "Left_drive");
         //Right_Drive = hardwareMap.get(DcMotor.class, "Right_drive");
-
 
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -161,102 +153,88 @@ public class Autonomous_test extends LinearOpMode {
         if (opModeIsActive()) {
 
 
-
-
-
-
-
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
-                      // step through the list of recognitions and display boundary info.
-                      int i = 0;
-                      for (Recognition recognition : updatedRecognitions) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
                         telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        if(recognition.getLabel().equals(LABEL_FIRST_ELEMENT)){
+                        if (recognition.getLabel().equals(LABEL_FIRST_ELEMENT)) {
                             // go to target zone C
                             telemetry.addLine("Target_C ");
                             //right_Drive.setPower(1);
                             //Left_Drive.setPower(1);
-                           // sleep(2000);
+                            // sleep(2000);
                             Target_C();
                             sleep(1000);
 
 
-
+                        }
+                        if (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
+                            // the robot will go to target zone b
+                            telemetry.addLine("Target_B");
+                            Target_B();
+                            tfod.shutdown();
+                            sleep(1000);
 
 
                         } else {
-                            if(recognition.getLabel().equals((LABEL_SECOND_ELEMENT))){
-                                // the robot will go to target zone b
-                                telemetry.addLine("Target_B");
-                                Target_B();
-                                tfod.shutdown();
-                                sleep(1000);
+                            // do something else or go to target A
+                            telemetry.addLine("Target A ");
+                            //TODO:REMEMBER THAT WE NEED TO FIX  THE  AUTONOMOUS  FOT THE TARGET A
+
+                            claw.setPosition(270);
+                            sleep(500);
+                            tfod.shutdown();
+                            sleep(1000);
+                            claw.setPosition(0);
+                            sleep(3000);
+                            arm("UP", 100);
+                            Forward(40, .5);
+                            sleep(1000);
+                            resetEncoders();
+                            Left(.6, .5);
+                            sleep(530);//
+                            resetEncoders();
+                            sleep(100);
+                            Forward(.8, .5);
+                            sleep(50);
+                            resetEncoders();
+                            sleep(2000);
+                            claw.setPosition(270);
+                            sleep(1000);
+                            arm("DOWN", 300);
+                            resetEncoders();
+                            sleep(20);
+                            Reverse(.3, .5);
+                            sleep(50);
 
 
-
-                            } else {
-                                // do something else or go to target A
-                                telemetry.addLine("Target A ");
-                                // TODO: 4/7/21 finich the autonoumous for target a by the end of the day
-                                claw .setPosition(270);
-                                sleep(500);
-                                tfod.shutdown();
-                                sleep(1000);
-                                claw.setPosition(0);
-                                sleep(3000);
-                                arm("UP",100);
-                                Forward(40,.5);
-                                sleep(1000);
-                                resetEncoders();
-                                Left(.6,.5);
-                                sleep(530);//
-                                resetEncoders();
-                                sleep(100);
-                                Forward(.8,.5);
-                                sleep(50);
-                                resetEncoders();
-                                sleep(2000);
-                                claw.setPosition(270);
-                                sleep(1000);
-                                arm("DOWN",300);
-                                resetEncoders();
-                                sleep(20);
-                                Reverse(.3,.5);
-                                sleep(50);
-
-
-
-                                
-
-
-
-
-
-
-                            }
                         }
+                    }
 
                         /*telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                           recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                 recognition.getRight(), recognition.getBottom());*/
-                    }
-                    telemetry.update();
                 }
+                telemetry.update();
             }
         }
-        if (tfod != null) {
-            tfod.shutdown();
-        }
+
+        if(tfod !=null)
+
+    {
+        tfod.shutdown();
+    }
+
+}
 
 
-
-        }
 
     public void Forward (double Inches, double Speed) {
 
