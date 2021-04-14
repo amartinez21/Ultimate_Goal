@@ -174,7 +174,7 @@ public class Autonomous_test extends LinearOpMode {
 
 
                         }
-                        if (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
+                        else if  (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
                             // the robot will go to target zone b
                             telemetry.addLine("Target_B");
                             Target_B();
@@ -226,7 +226,38 @@ public class Autonomous_test extends LinearOpMode {
             }
         }
 
-        if(tfod !=null)
+        if(tfod !=null) {
+            telemetry.addLine("Target A ");
+            //TODO:REMEMBER THAT WE NEED TO FIX  THE  AUTONOMOUS  FOT THE TARGET A
+
+            claw.setPosition(270);
+            sleep(500);
+            tfod.shutdown();
+            sleep(1000);
+            claw.setPosition(0);
+            sleep(3000);
+            arm("UP", 100);
+            Forward(40, .5);
+            sleep(1000);
+            resetEncoders();
+            Left(.6, .5);
+            sleep(530);//
+            resetEncoders();
+            sleep(100);
+            Forward(.8, .5);
+            sleep(50);
+            resetEncoders();
+            sleep(2000);
+            claw.setPosition(270);
+            sleep(1000);
+            arm("DOWN", 300);
+            resetEncoders();
+            sleep(20);
+            Reverse(.3, .5);
+            sleep(50);
+
+
+        }
 
     {
         tfod.shutdown();
@@ -248,8 +279,8 @@ public class Autonomous_test extends LinearOpMode {
         right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        right_Drive.setTargetPosition((int) DesiredPos);
-        Left_Drive.setTargetPosition((int) DesiredPos);
+        right_Drive.setTargetPosition((int)- DesiredPos);
+        Left_Drive.setTargetPosition((int) -DesiredPos);
 
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -272,8 +303,8 @@ public class Autonomous_test extends LinearOpMode {
         right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        right_Drive.setTargetPosition((int) -DesiredPos);
-        Left_Drive.setTargetPosition((int) -DesiredPos);
+        right_Drive.setTargetPosition((int) DesiredPos);
+        Left_Drive.setTargetPosition((int) DesiredPos);
 
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -292,8 +323,8 @@ public class Autonomous_test extends LinearOpMode {
         double DesiredPos = Inches * EncoderTurns / Diameter;
 
         if (Direction == "RIGHT") {
-            right_Drive.setTargetPosition((int) DesiredPos);
-            Left_Drive.setTargetPosition((int) DesiredPos);
+            right_Drive.setTargetPosition((int) -DesiredPos);
+            Left_Drive.setTargetPosition((int) -DesiredPos);
 
         } else if (Direction == "LEFT") {
             right_Drive.setTargetPosition((int) DesiredPos);
