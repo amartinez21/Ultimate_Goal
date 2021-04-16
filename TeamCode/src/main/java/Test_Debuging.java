@@ -29,23 +29,12 @@
 */
 
 
-
-
-
-
-
-package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -63,9 +52,9 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = " TensorFlow Object Detection Autonomous ", group = "Concept")
+@Autonomous(name = " TensorFlow Object Detection Autonomous_Autonomous_test ", group = "Concept")
 //@Disabled
-public class Autonomous_test extends LinearOpMode {
+public class Test_Debuging extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     public static final String LABEL_SECOND_ELEMENT = "Single";
@@ -168,47 +157,32 @@ public class Autonomous_test extends LinearOpMode {
                             telemetry.addLine("Target_C ");
                             telemetry.update();
                             sleep(1000); //test
-                            claw.setPosition(0);
-                            sleep(1000);
-                            arm("UP",200);
-                            sleep(500);
 
+                            right_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            Left_Drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                            right_Drive.setPower(-0.5);
-                            Left_Drive.setPower(-0.5);
-                            sleep(2900);//
+                            right_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                            Left_Drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                            sleep( 1000);
+                            right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                            right_Drive.setPower(0);
-                            Left_Drive.setPower(0);
-                            sleep(2000);
-                            claw.setPosition(270);
-                            sleep(1000);
+                            right_Drive.setTargetPosition((int)- 1000);
+                            Left_Drive.setTargetPosition((int) -1000);
 
-                            arm("DOWN",200);
-                            sleep(100);
-                            right_Drive.setPower(.5);
-                            Left_Drive.setPower(.5);
-                            sleep(300);
+                            right_Drive.setPower(0.05);
+                            Left_Drive.setPower(0.05);
+
+                            sleep(2990);
 
                             telemetry.addLine("Done!");
                             telemetry.update();
-                            right_Drive.setPower(0);
-                            Left_Drive.setPower(0);
-                            sleep(20000);
-
-
-
-
-
-
 
                         }
-                        else if  (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
+                         /*if  (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
                             // the robot will go to target zone b
                             telemetry.addLine("Target_B");
-                            //Target_B();
+                            Target_B();
                             tfod.shutdown();
                             sleep(1000);
 
@@ -257,7 +231,7 @@ public class Autonomous_test extends LinearOpMode {
             }
         }
 
-        if(tfod !=null) {
+        /*if(tfod !=null) {
             telemetry.addLine("Target A ");
             //TODO:REMEMBER THAT WE NEED TO FIX  THE  AUTONOMOUS  FOT THE TARGET A
 
@@ -304,12 +278,12 @@ public class Autonomous_test extends LinearOpMode {
     {
         tfod.shutdown();
     }
-
+*/
 }
 
 
 
-    public void Forward (double Inches, double Speed) {
+    public void Forward (double Inches, double Speed ) {
 
         double Diameter = 6.28;
         double EncoderTurns = 288;
@@ -347,7 +321,7 @@ public class Autonomous_test extends LinearOpMode {
 
         right_Drive.setTargetPosition((int) DesiredPos);
         Left_Drive.setTargetPosition((int) DesiredPos);
-
+            sleep(20000);
         right_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Left_Drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -391,12 +365,12 @@ public class Autonomous_test extends LinearOpMode {
 
     }
     public void Target_C(){
-        //tfod.shutdown();
-        //sleep(1000);
-        //claw.setPosition(0);
-        //sleep(3000);
-        //arm("UP", 1000);
-        //Forward(30,.25);
+        tfod.shutdown();
+        sleep(1000);
+        claw.setPosition(0);
+        sleep(3000);
+        arm("UP", 1000);
+        Forward(30,.25);
        /* sleep(100);
         //pick up the wobble goal and drive forward  to Target C
         claw.setPosition(0);
@@ -410,11 +384,6 @@ public class Autonomous_test extends LinearOpMode {
 
         resetEncoders();
         KILL_BOT();
-
-
-
-
-
 
         //90 100
         //Drive(-20,1);
