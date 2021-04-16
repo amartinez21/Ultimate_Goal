@@ -167,7 +167,9 @@ public class Autonomous_test extends LinearOpMode {
                             // go to target zone C
                             telemetry.addLine("Target_C ");
                             telemetry.update();
-                            sleep(1000); //test
+                            Target_C();
+
+                           /* sleep(1000); //test
                             claw.setPosition(0);
                             sleep(1000);
                             arm("UP",200);
@@ -198,6 +200,8 @@ public class Autonomous_test extends LinearOpMode {
                             Left_Drive.setPower(0);
                             sleep(20000);
 
+                            */
+
 
 
 
@@ -209,28 +213,8 @@ public class Autonomous_test extends LinearOpMode {
                             // the robot will go to target zone b
                             telemetry.addLine("Target_B");
                             telemetry.update();
+                            Target_B();
 
-                            sleep(1000); //test
-                            claw.setPosition(0);
-                            sleep(1000);
-                            arm("UP",200);
-                            sleep(500);
-
-                            right_Drive.setPower(-0.5);
-                            Left_Drive.setPower(-0.5);
-                            sleep(2500);//
-
-                            right_Drive.setPower(0);
-                            Left_Drive.setPower(0);
-                            sleep(1000);
-
-                            right_Drive.setPower(-0.5);
-                            Left_Drive.setPower(-0.5);
-
-                            sleep(200);
-
-                            tfod.shutdown();
-                            sleep(20000);
 
 
                         } /*else
@@ -280,7 +264,8 @@ public class Autonomous_test extends LinearOpMode {
         if(tfod !=null) {
             telemetry.addLine("Target A ");
             //TODO:REMEMBER THAT WE NEED TO FIX  THE  AUTONOMOUS  FOT THE TARGET A
-
+            Target_A();
+            /*
             claw.setPosition(270);
             sleep(500);
             tfod.shutdown();
@@ -304,18 +289,9 @@ public class Autonomous_test extends LinearOpMode {
             arm("DOWN", 300);
             resetEncoders();
             sleep(50);
-           // Reverse(.4, .5);
-            //sleep(500);
-            //telemetry.addLine("Reverse");
-            //resetEncoders();
-            //sleep(500);
-            //RIGHT(1,1);
-            //sleep (500);
-            //resetEncoders();
-            //sleep(1000);
-            //sleep(500);
-            //Forward(4,.5);
-            //sleep(80);
+            
+             */
+
 
 
 
@@ -411,82 +387,115 @@ public class Autonomous_test extends LinearOpMode {
 
     }
     public void Target_C(){
-        //tfod.shutdown();
-        //sleep(1000);
-        //claw.setPosition(0);
-        //sleep(3000);
-        //arm("UP", 1000);
-        //Forward(30,.25);
-       /* sleep(100);
-        //pick up the wobble goal and drive forward  to Target C
+        sleep(1000); //test
         claw.setPosition(0);
-        arm("DOWN",300);
-
-        sleep(1800);
-
-        Reverse(8,1);
-        sleep(900);
+        sleep(1000);
+        arm("UP",200);
+        sleep(500);
 
 
-        resetEncoders();
-        KILL_BOT();
+        right_Drive.setPower(-0.5);
+        Left_Drive.setPower(-0.5);
+        sleep(2900);//
+
+        sleep( 1000);
+
+        right_Drive.setPower(0);
+        Left_Drive.setPower(0);
+        sleep(2000);
+        claw.setPosition(270);
+        sleep(1000);
+
+        arm("DOWN",200);
+        sleep(100);
+        right_Drive.setPower(.5);
+        Left_Drive.setPower(.5);
+        sleep(500);
+
+        telemetry.addLine("Done!");
+        telemetry.update();
+        right_Drive.setPower(0);
+        Left_Drive.setPower(0);
+        sleep(20000);
 
 
-
-
-
-
-        //90 100
-        //Drive(-20,1);
-
-*/
 
     }
     public void Target_B(){
-        tfod.shutdown();
-        sleep(1000);
+
+        sleep(1000); //test
         claw.setPosition(0);
-        sleep(3000);
-        arm("UP",100);
-        Forward(40,.5);
         sleep(1000);
-        resetEncoders();
-        Left(.6,.5);
-        sleep(530);//
-        resetEncoders();
-        sleep(100);
-        Forward(.8,.5);
-        sleep(80);
-      resetEncoders();
-      sleep(2000);
+        arm("UP",200);
+        sleep(500);
+
+        right_Drive.setPower(-0.5);
+        Left_Drive.setPower(-0.5);
+        sleep(2500);//
+
+        right_Drive.setPower(0);
+        Left_Drive.setPower(0);
+        sleep(1000);
+
+        right_Drive.setPower(.5);
+        Left_Drive.setPower(-.5);
+
+        sleep(800);
+
+        right_Drive.setPower(0);
+        Left_Drive.setPower(0);
+        sleep(200);
+
+        right_Drive.setPower(-0.5);
+        Left_Drive.setPower(-0.5);
+        sleep(600);//
+
+        right_Drive.setPower(0);
+        Left_Drive.setPower(0);
+        sleep(2500);//
+
         claw.setPosition(270);
-        sleep(1000);
+        sleep(100);
+
+        right_Drive.setPower(0.5);
+        Left_Drive.setPower(0.5);
+        sleep(60);//
         arm("DOWN",300);
-        resetEncoders();
-        sleep(20);
-        Reverse(.3,.5);
-        sleep(50);
+        sleep(100);
+        right_Drive.setPower(0);
+        Left_Drive.setPower(0);
+        sleep(500);//
+        tfod.shutdown();
+        sleep(20000);
 
 
 
     }
     public void Target_A(){
+        claw.setPosition(270);
+        sleep(500);
+        tfod.shutdown();
         sleep(1000);
-        arm("UP",1000);
-        sleep(100);
-        Forward(40,.5 );
-
-
-        sleep(1000);
-        arm("DOWN",100);
-        sleep(100);
         claw.setPosition(0);
-        sleep(100);
-        arm("UP",100);
-        sleep(100);
-        Reverse(4,1);
+        sleep(3000);
+        arm("UP", 100);
+        Forward(42, .5);
+        sleep(1200);
         resetEncoders();
-        arm("DOWN",100);
+        Left(.6, .5);
+        sleep(530);//
+        resetEncoders();
+        sleep(100);
+        Forward(.8, .5);
+        sleep(80);
+        resetEncoders();
+        sleep(2000);
+        claw.setPosition(270);
+        sleep(1000);
+        arm("DOWN", 300);
+        resetEncoders();
+        sleep(50);
+
 
 
 
