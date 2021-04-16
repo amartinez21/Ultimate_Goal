@@ -62,6 +62,7 @@ public class test2 extends LinearOpMode {
     private DcMotor Shooter = null;
     //wobble goal OpMode members:
     private DcMotor motor = null;
+    double scale = 1;
     //servo info
     static final double INCREMENT = 0.02;
     static final int CYCLE_MS = 50;
@@ -114,8 +115,8 @@ public class test2 extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = -gamepad1.left_stick_y;
             double turn = -gamepad1.right_stick_x;
-            leftPower = Range.clip(drive + turn, -1.0, 1.0);
-            rightPower = Range.clip(drive - turn, -1.0, 1.0);
+            leftPower = Range.clip(drive + turn, -scale, scale);
+            rightPower = Range.clip(drive - turn, -scale, scale);
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -137,6 +138,11 @@ public class test2 extends LinearOpMode {
             ShootingServo();
             motor.setPower(0);
             ShootingMotor();
+            if (gamepad1.left_stick_button) {
+                scale = 0.45;
+            } else {
+                scale = 1;
+            }
             if (gamepad1.dpad_up) {
                 motor.setDirection(DcMotor.Direction.REVERSE);
                 motor.setPower(Range.clip(Power, -1.00, 1.00));
@@ -146,13 +152,16 @@ public class test2 extends LinearOpMode {
             } else if (gamepad1.a) {
                 motor.setDirection(DcMotor.Direction.REVERSE);
                 motor.setPower(Range.clip(Power, -0.25, 0.25));
+            } else if (gamepad1.b) {
+                motor.setDirection(DcMotor.Direction.FORWARD);
+                motor.setPower(Range.clip(Power, -0.15, 0.15));
             } else if (gamepad1.dpad_left) {
                 if (position < MAX_POS) {
                     position += INCREMENT;
                 }
             } else if (gamepad1.dpad_right) {
                 if (position > MIN_POS) {
-                    position -= INCREMENT;
+                    position = 0;
                 }
             } else {
                 motor.setPower(0);
