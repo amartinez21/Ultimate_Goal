@@ -190,7 +190,7 @@ public class Autonomous_test extends LinearOpMode {
                             sleep(100);
                             right_Drive.setPower(.5);
                             Left_Drive.setPower(.5);
-                            sleep(300);
+                            sleep(500);
 
                             telemetry.addLine("Done!");
                             telemetry.update();
@@ -208,9 +208,29 @@ public class Autonomous_test extends LinearOpMode {
                         else if  (recognition.getLabel().equals((LABEL_SECOND_ELEMENT))) {
                             // the robot will go to target zone b
                             telemetry.addLine("Target_B");
-                            //Target_B();
-                            tfod.shutdown();
+                            telemetry.update();
+
+                            sleep(1000); //test
+                            claw.setPosition(0);
                             sleep(1000);
+                            arm("UP",200);
+                            sleep(500);
+
+                            right_Drive.setPower(-0.5);
+                            Left_Drive.setPower(-0.5);
+                            sleep(2500);//
+
+                            right_Drive.setPower(0);
+                            Left_Drive.setPower(0);
+                            sleep(1000);
+
+                            right_Drive.setPower(-0.5);
+                            Left_Drive.setPower(-0.5);
+
+                            sleep(200);
+
+                            tfod.shutdown();
+                            sleep(20000);
 
 
                         } /*else
