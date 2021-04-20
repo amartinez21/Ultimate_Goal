@@ -289,7 +289,7 @@ public class Autonomous_test extends LinearOpMode {
             arm("DOWN", 300);
             resetEncoders();
             sleep(50);
-            
+
              */
 
 
@@ -410,7 +410,7 @@ public class Autonomous_test extends LinearOpMode {
         sleep(100);
         right_Drive.setPower(.5);
         Left_Drive.setPower(.5);
-        sleep(500);
+        sleep(1000);
 
         telemetry.addLine("Done!");
         telemetry.update();
@@ -431,7 +431,7 @@ public class Autonomous_test extends LinearOpMode {
 
         right_Drive.setPower(-0.5);
         Left_Drive.setPower(-0.5);
-        sleep(2500);//
+        sleep(2800);//
 
         right_Drive.setPower(0);
         Left_Drive.setPower(0);
@@ -440,19 +440,19 @@ public class Autonomous_test extends LinearOpMode {
         right_Drive.setPower(.5);
         Left_Drive.setPower(-.5);
 
-        sleep(800);
+        sleep(1200);
 
         right_Drive.setPower(0);
         Left_Drive.setPower(0);
         sleep(200);
 
-        right_Drive.setPower(-0.5);
-        Left_Drive.setPower(-0.5);
-        sleep(600);//
+        //right_Drive.setPower(-0.5);
+        //Left_Drive.setPower(-0.5);
+        //sleep(200);//
 
-        right_Drive.setPower(0);
-        Left_Drive.setPower(0);
-        sleep(2500);//
+        //right_Drive.setPower(0);
+        //Left_Drive.setPower(0);
+        //sleep(2500);//
 
         claw.setPosition(270);
         sleep(100);
@@ -472,15 +472,16 @@ public class Autonomous_test extends LinearOpMode {
 
     }
     public void Target_A(){
-        claw.setPosition(270);
+        //claw.setPosition(270);
         sleep(500);
         tfod.shutdown();
-        sleep(1000);
+        //Forward speed
+        sleep(1180);
         claw.setPosition(0);
         sleep(3000);
         arm("UP", 100);
-        Forward(42, .5);
-        sleep(1200);
+        Forward(44, .5);
+        sleep(1100);
         resetEncoders();
         Left(.6, .5);
         sleep(530);//
@@ -492,6 +493,10 @@ public class Autonomous_test extends LinearOpMode {
         sleep(2000);
         claw.setPosition(270);
         sleep(1000);
+        right_Drive.setPower(-1.0);
+        Left_Drive.setPower(-1.0);
+        sleep(2000);
+
         arm("DOWN", 300);
         resetEncoders();
         sleep(50);

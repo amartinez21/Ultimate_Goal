@@ -167,35 +167,35 @@ public class test2 extends LinearOpMode {
                 motor.setPower(0);
             }
 
-                servo.setPosition(position);
-                sleep(CYCLE_MS);
-                idle();
+            servo.setPosition(position);
+            sleep(CYCLE_MS);
+            idle();
 
-                // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-                telemetry.addData("Servo Position", "%5.2f", position);
-                telemetry.update();
-            }
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.addData("Servo Position", "%5.2f", position);
+            telemetry.update();
         }
-        public void ServoTest(){
-            if (gamepad1.left_bumper == true) {
-                servoPosition = 0;
-                servoShooter.setPosition(servoPosition);
-            }
+    }
+    public void ServoTest(){
+        if (gamepad1.left_bumper == true) {
+            servoPosition = 0;
+            servoShooter.setPosition(servoPosition);
         }
-        public void ShootingMotor(){
-            if (gamepad1.right_bumper == true) {
-                Shooter.setPower(-0.8);
-            } else if (gamepad1.right_bumper == false) {
-                Shooter.setPower(0);
-            }
+    }
+    public void ShootingMotor(){
+        if (gamepad1.right_bumper == true) {
+            Shooter.setPower(-0.8);
+        } else if (gamepad1.right_bumper == false) {
+            Shooter.setPower(0);
         }
-        public void ShootingServo() {
-            if (gamepad1.left_bumper == true) {
-                servoShooter.setPosition(270);
-            } else if (gamepad1.left_bumper == false) {
-                servoShooter.setPosition(0);
-            }
+    }
+    public void ShootingServo() {
+        if (gamepad1.left_bumper == true) {
+            servoShooter.setPosition(270);
+        } else if (gamepad1.left_bumper == false) {
+            servoShooter.setPosition(0);
+        }
     }
 }
